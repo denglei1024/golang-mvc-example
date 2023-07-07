@@ -5,13 +5,17 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/techdenglei/eshop/controllers"
-	_ "github.com/techdenglei/eshop/initiailizers"
+	"github.com/techdenglei/eshop/initiailizers"
 )
 
 func init() {
+	// 连接到数据库
+	db := initiailizers.ConnectToDatabase()
+	initiailizers.Migration(db)
 }
 
 func main() {
+
 	router := gin.Default()
 	registerRouter(router)
 	port := os.Getenv("PORT")
