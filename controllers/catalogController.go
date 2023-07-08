@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,7 @@ func (catalog *CatalogController) Router(c *gin.Engine) {
 	c.GET("/items", items)
 	c.GET("/items/:id", itemById)
 	c.POST("/items", createProduct)
+	c.DELETE("/items/:id", deleteProduct)
 }
 
 func catalogTypes(c *gin.Context) {
@@ -48,4 +50,11 @@ func createProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"product": product,
 	})
+}
+
+func deleteProduct(c *gin.Context) {
+	fmt.Print("123")
+	id := c.Param("id")
+	initiailizers.DB.Delete(&models.CatalogItem{}, id)
+	c.Status(http.StatusOK)
 }
