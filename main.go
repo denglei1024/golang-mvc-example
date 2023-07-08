@@ -9,9 +9,7 @@ import (
 )
 
 func init() {
-	// 连接到数据库
-	db := initiailizers.ConnectToDatabase()
-	initiailizers.Migration(db)
+	initiailizers.ConnectToDatabase()
 }
 
 func main() {
