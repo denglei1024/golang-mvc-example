@@ -10,4 +10,4 @@ services:
     environment:
       # 设置root密码
       MYSQL_ROOT_PASSWORD: 'rootroot'
-      MSYQL_DATABASE: 'eshop'
+      MSYQL_DATABASE: 'testdb'

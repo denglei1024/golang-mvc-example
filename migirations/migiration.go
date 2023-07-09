@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/techdenglei/eshop/initiailizers"
-	"github.com/techdenglei/eshop/models"
+	"github.com/techdenglei/golang-mvc-example/initiailizers"
+	"github.com/techdenglei/golang-mvc-example/models"
 )
 
 func init() {
@@ -10,5 +10,5 @@ func init() {
 }
 
 func main() {
-	initiailizers.DB.AutoMigrate(&models.CatalogBrand{}, &models.CatalogItem{}, &models.CatalogType{})
+	initiailizers.DB.AutoMigrate(&models.Question{}, &models.Answer{}, &models.Catagory{})
 }

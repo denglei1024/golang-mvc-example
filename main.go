@@ -4,8 +4,8 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/techdenglei/eshop/initiailizers"
-	"github.com/techdenglei/eshop/routes"
+	"github.com/techdenglei/golang-mvc-example/initiailizers"
+	"github.com/techdenglei/golang-mvc-example/routes"
 )
 
 func init() {
