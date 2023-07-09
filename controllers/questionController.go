@@ -24,12 +24,17 @@ func (question *QuestionController) Router(c *gin.Engine) {
 func QuestionCreate(c *gin.Context) {
 	// 从body中获取数据
 	reqBody := models.Question{}
-	c.Bind(&reqBody)
+	if err := c.ShouldBindJSON(&reqBody); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 	question := models.Question{
 		ID:          reqBody.ID,
 		Title:       reqBody.Title,
 		Description: reqBody.Description,
-		CatalogID:   reqBody.CatalogID,
+		CategoryID:  reqBody.CategoryID,
 	}
 
 	// 创建一个question
@@ -43,12 +48,17 @@ func QuestionCreate(c *gin.Context) {
 
 func QuestionUpdate(c *gin.Context) {
 	reqBody := models.Question{}
-	c.Bind(&reqBody)
+	if err := c.ShouldBindJSON(&reqBody); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 	question := models.Question{}
 	initiailizers.DB.First(&question, reqBody.ID)
 	question.Title = reqBody.Title
 	question.Description = reqBody.Description
-	question.CatalogID = reqBody.CatalogID
+	question.CategoryID = reqBody.CategoryID
 	result := initiailizers.DB.Save(&question)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error})
