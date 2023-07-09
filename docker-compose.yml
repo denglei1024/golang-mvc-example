@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    expose:
+      - '3306'
+    ports:
+      - "3306:3306"
+    environment:
+      # 设置root密码
+      MYSQL_ROOT_PASSWORD: 'rootroot'
+      MSYQL_DATABASE: 'eshop'
