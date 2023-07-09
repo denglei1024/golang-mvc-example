@@ -1,4 +1,4 @@
-package migirations
+package main
 
 import (
 	"github.com/techdenglei/eshop/initiailizers"

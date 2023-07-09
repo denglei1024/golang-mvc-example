@@ -4,8 +4,8 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/techdenglei/eshop/controllers"
 	"github.com/techdenglei/eshop/initiailizers"
+	"github.com/techdenglei/eshop/routes"
 )
 
 func init() {
@@ -13,14 +13,9 @@ func init() {
 }
 
 func main() {
-
 	router := gin.Default()
-	registerRouter(router)
+	routes.UseRoutes(router)
 	port := os.Getenv("PORT")
 	host := os.Getenv("HOST")
 	router.Run(host + ":" + port)
-}
-
-func registerRouter(engine *gin.Engine) {
-	new(controllers.CatalogController).Router(engine)
 }
