@@ -7,4 +7,6 @@ import (
 
 func UseRoutes(engine *gin.Engine) {
 	new(controllers.QuestionController).Router(engine)
+	// register user routes
+	new(controllers.UserController).Router(engine)
 }
