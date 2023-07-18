@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/techdenglei/golang-mvc-example/initiailizers"
 	"github.com/techdenglei/golang-mvc-example/models"
+	"github.com/techdenglei/golang-mvc-example/utils"
 	"gorm.io/gorm"
 )
 
@@ -14,20 +15,18 @@ type QuestionController struct {
 }
 
 func (question *QuestionController) Router(c *gin.Engine) {
-	c.POST("/question/create", QuestionCreate)
-	c.POST("/question/update", QuestionUpdate)
-	c.DELETE("/question/delete/:id", QuestionDelete)
-	c.GET("/question/list", QuestionList)
-	c.GET("/question/:id", QuestionShow)
+	c.POST("/question/create", questionCreate)
+	c.POST("/question/update", questionUpdate)
+	c.DELETE("/question/delete/:id", questionDelete)
+	c.GET("/question/list", questionList)
+	c.GET("/question/:id", questionShow)
 }
 
-func QuestionCreate(c *gin.Context) {
-	// 从body中获取数据
+func questionCreate(c *gin.Context) {
+	// get data off the request body
 	reqBody := models.Question{}
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		utils.Error(c, err)
 		return
 	}
 	question := models.Question{
@@ -37,21 +36,19 @@ func QuestionCreate(c *gin.Context) {
 		CategoryID:  reqBody.CategoryID,
 	}
 
-	// 创建一个question
+	// create a new question
 	result := initiailizers.DB.Create(&question)
 	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error})
+		utils.Error(c, result.Error)
 		return
 	}
 	c.JSON(http.StatusOK, &question)
 }
 
-func QuestionUpdate(c *gin.Context) {
+func questionUpdate(c *gin.Context) {
 	reqBody := models.Question{}
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		utils.Error(c, err)
 		return
 	}
 	question := models.Question{}
@@ -61,45 +58,45 @@ func QuestionUpdate(c *gin.Context) {
 	question.CategoryID = reqBody.CategoryID
 	result := initiailizers.DB.Save(&question)
 	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error})
+		utils.Error(c, result.Error)
 		return
 	}
 	c.JSON(http.StatusOK, &question)
 }
 
-func QuestionDelete(c *gin.Context) {
+func questionDelete(c *gin.Context) {
 	id := c.Param("id")
 	question := models.Question{}
 	result := initiailizers.DB.Delete(&question, id)
 	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error})
+		utils.Error(c, result.Error)
 		return
 	}
 	c.Status(http.StatusOK)
 }
 
-func QuestionShow(c *gin.Context) {
+func questionShow(c *gin.Context) {
 	id := c.Param("id")
 	question := models.Question{}
 	result := initiailizers.DB.First(&question, id)
 	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error})
+		utils.Error(c, result.Error)
 		return
 	}
 	c.JSON(http.StatusOK, &question)
 }
 
-func QuestionList(c *gin.Context) {
+func questionList(c *gin.Context) {
 	questions := []models.Question{}
-	result := initiailizers.DB.Scopes(Paginate(c.Request)).Find(&questions)
+	result := initiailizers.DB.Scopes(paginate(c.Request)).Find(&questions)
 	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error})
+		utils.Error(c, result.Error)
 		return
 	}
 	c.JSON(http.StatusOK, &questions)
 }
 
-func Paginate(r *http.Request) func(db *gorm.DB) *gorm.DB {
+func paginate(r *http.Request) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		q := r.URL.Query()
 		page, _ := strconv.Atoi(q.Get("page"))

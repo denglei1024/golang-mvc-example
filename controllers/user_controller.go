@@ -9,6 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/techdenglei/golang-mvc-example/initiailizers"
 	"github.com/techdenglei/golang-mvc-example/models"
+	"github.com/techdenglei/golang-mvc-example/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -29,18 +30,14 @@ func signup(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&userReq); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		utils.Error(c, err)
 		return
 	}
 
 	// hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userReq.Password), 10)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.Error(c, err)
 		return
 	}
 
@@ -52,10 +49,7 @@ func signup(c *gin.Context) {
 
 	// save the new user
 	initiailizers.DB.Create(&newUser)
-
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "User created",
-	})
+	utils.Success(c, nil)
 }
 
 // define a method for login
@@ -67,9 +61,7 @@ func login(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&userReq); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		utils.Error(c, err)
 		return
 	}
 
@@ -78,18 +70,14 @@ func login(c *gin.Context) {
 	initiailizers.DB.Where("email =?", userReq.Email).First(&user)
 
 	if user.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": "User not found",
-		})
+		utils.Fail(c, 404, "User not found")
 		return
 	}
 
 	// compare the password
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userReq.Password))
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Invalid password",
-		})
+		utils.Fail(c, 401, "Invalid password")
 		return
 	}
 
@@ -101,17 +89,11 @@ func login(c *gin.Context) {
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.Error(c, err)
 		return
 	}
 	c.SetSameSite(http.SameSiteLaxMode)
 	// set cookie
 	c.SetCookie("token", tokenString, 3600*24*30, "", "", false, true)
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "login successful",
-	})
-
+	utils.Success(c, nil)
 }
